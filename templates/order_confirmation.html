@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            text-align: center;
+        }
+        .order-info {
+            background: #f9f9f9;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .items-table th, .items-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .items-table th {
+            background: #667eea;
+            color: white;
+        }
+        .items-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        .summary {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .summary-row.total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+            border-top: 2px solid #ddd;
+            padding-top: 10px;
+        }
+        .footer {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 12px;
+            text-align: center;
+            color: #666;
+        }
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .status-badge {
+            display: inline-block;
+            background: #ffc107;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Order Confirmation</h1>
+            <p>Thank you for your order!</p>
+        </div>
+
+        <div class="order-info">
+            <h3>Order Details</h3>
+            <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+            <p><strong>Order Date:</strong> {{ order.created_at|date:"F j, Y, g:i A" }}</p>
+            <p><strong>Status:</strong> <span class="status-badge">{{ order.get_status_display }}</span></p>
+        </div>
+
+        <div class="order-info">
+            <h3>Customer Information</h3>
+            <p><strong>Name:</strong> {{ customer.first_name }} {{ customer.last_name }}</p>
+            <p><strong>Email:</strong> {{ customer.email }}</p>
+            <p><strong>Phone:</strong> {{ order.phone_number }}</p>
+        </div>
+
+        <div class="order-info">
+            <h3>Shipping Address</h3>
+            <p>
+                {{ order.shipping_address }}<br>
+                {{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip_code }}<br>
+                {{ order.shipping_country }}
+            </p>
+        </div>
+
+        <h3>Order Items</h3>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>KES {{ item.price_at_purchase }}</td>
+                    <td>KES {{ item.subtotal }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="summary">
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span>KES {{ order.total_amount }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Tax:</span>
+                <span>KES {{ order.tax_amount }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Delivery Fee:</span>
+                <span>KES {{ order.delivery_fee }}</span>
+            </div>
+            {% if order.discount_amount > 0 %}
+            <div class="summary-row">
+                <span>Discount:</span>
+                <span>-KES {{ order.discount_amount }}</span>
+            </div>
+            {% endif %}
+            <div class="summary-row total">
+                <span>Total Amount:</span>
+                <span>KES {{ order.final_amount }}</span>
+            </div>
+        </div>
+
+        {% if order.notes %}
+        <div class="order-info">
+            <h3>Order Notes</h3>
+            <p>{{ order.notes }}</p>
+        </div>
+        {% endif %}
+
+        <div style="text-align: center; margin: 30px 0;">
+            <p><strong>Next Steps:</strong> You will receive a payment prompt on your phone to complete the payment. Please complete the M-Pesa transaction to confirm your order.</p>
+            <a href="http://127.0.0.1:8000/api/orders/{{ order.id }}/" class="btn">Track Order</a>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2026 Safari Stores. All rights reserved.</p>
+            <p>This is an automated email. Please do not reply to this email.</p>
+            <p>If you have any questions, please contact us at support@safaristores.com</p>
+        </div>
+    </div>
+</body>
+</html>

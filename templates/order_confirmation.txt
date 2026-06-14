@@ -1,0 +1,62 @@
+ORDER CONFIRMATION - Safari Stores
+=====================================
+
+Dear {{ customer.first_name }} {{ customer.last_name }},
+
+Thank you for your order at Safari Stores!
+
+ORDER DETAILS:
+--------------
+Order Number: {{ order.order_number }}
+Order Date: {{ order.created_at|date:"F j, Y, g:i A" }}
+Status: {{ order.get_status_display }}
+
+CUSTOMER INFORMATION:
+---------------------
+Name: {{ customer.first_name }} {{ customer.last_name }}
+Email: {{ customer.email }}
+Phone: {{ order.phone_number }}
+
+SHIPPING ADDRESS:
+-----------------
+{{ order.shipping_address }}
+{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip_code }}
+{{ order.shipping_country }}
+
+ORDER ITEMS:
+------------
+{% for item in order.items.all %}
+- {{ item.product.name }}
+  Quantity: {{ item.quantity }}
+  Price: KES {{ item.price_at_purchase }}
+  Subtotal: KES {{ item.subtotal }}
+
+{% endfor %}
+
+ORDER SUMMARY:
+--------------
+Subtotal: KES {{ order.total_amount }}
+Tax: KES {{ order.tax_amount }}
+Delivery Fee: KES {{ order.delivery_fee }}
+{% if order.discount_amount > 0 %}Discount: -KES {{ order.discount_amount }}
+{% endif %}
+---
+TOTAL AMOUNT: KES {{ order.final_amount }}
+
+{% if order.notes %}SPECIAL NOTES:
+---------------
+{{ order.notes }}
+
+{% endif %}NEXT STEPS:
+-----------
+You will receive a payment prompt on your phone to complete the payment. Please complete the M-Pesa transaction to confirm your order.
+
+We will notify you when your order has been confirmed and dispatched.
+
+Thank you for shopping with Safari Stores!
+
+For any questions or concerns, please contact us at support@safaristores.com
+
+---
+This is an automated email. Please do not reply to this email.
+&copy; 2026 Safari Stores. All rights reserved.

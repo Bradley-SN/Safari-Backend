@@ -1,0 +1,12 @@
+from rest_framework import viewsets, permissions
+from .models import Category
+from .serializers import CategorySerializer
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.filter(is_active=True)
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    search_fields = ['name']
+    ordering_fields = ['name', 'created_at']
+    filterset_fields = ['is_active']
